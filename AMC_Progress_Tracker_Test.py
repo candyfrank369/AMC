@@ -7,6 +7,7 @@ from AMC_Progress_Tracker import (
     print_date_and_countdown,
     input_score_and_store,
     parse_question_numbers,
+    correct_count,
     load_records,
     read_scores,
     calculate_growth_rate,
@@ -66,10 +67,16 @@ def feed_inputs(monkeypatch, *values):
     monkeypatch.setattr("builtins.input", lambda _: next(answers))
 
 
-def test_input_saves_dict_with_correct_questions(monkeypatch, tmp_path, capsys):
+def test_correct_count_handles_both_modes():
+    assert correct_count({"correct": [1, 2, 3]}) == 3   # detailed mode
+    assert correct_count({"num_correct": 4}) == 4        # quick mode
+    assert correct_count({"score": 50.0}) == 0           # old/missing data
+
+
+def test_detailed_mode_saves_question_list(monkeypatch, tmp_path, capsys):
     monkeypatch.chdir(tmp_path)
-    # answered all 30, got the first 18 right = 60%
-    feed_inputs(monkeypatch, "30", ",".join(str(q) for q in range(1, 19)))
+    # mode 1 (detailed), answered all 30, got the first 18 right = 60%
+    feed_inputs(monkeypatch, "1", "30", ",".join(str(q) for q in range(1, 19)))
     input_score_and_store()
     assert "60.00%" in capsys.readouterr().out
 
@@ -79,9 +86,39 @@ def test_input_saves_dict_with_correct_questions(monkeypatch, tmp_path, capsys):
     assert records[0]["correct"] == list(range(1, 19))  # the per-question detail is stored
 
 
+def test_quick_mode_saves_count_only(monkeypatch, tmp_path, capsys):
+    monkeypatch.chdir(tmp_path)
+    # mode 2 (quick), answered 20, got 6 right = 20%
+    feed_inputs(monkeypatch, "2", "20", "6")
+    input_score_and_store()
+    assert "20.00%" in capsys.readouterr().out
+
+    records = json.loads((tmp_path / "amc_scores.json").read_text())
+    assert records[0]["score"] == 20.0
+    assert records[0]["answered"] == 20
+    assert records[0]["num_correct"] == 6
+    assert "correct" not in records[0]  # quick mode does NOT store which questions
+
+
+def test_quick_mode_warns_it_is_the_weaker_coach(monkeypatch, tmp_path, capsys):
+    monkeypatch.chdir(tmp_path)
+    feed_inputs(monkeypatch, "2", "20", "6")
+    input_score_and_store()
+    assert "Detailed mode is the better coach" in capsys.readouterr().out
+
+
+def test_mode_chooser_reprompts_on_bad_choice(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    # "9" is invalid -> reprompt, then "1" detailed, answered 3, correct 1,2,3
+    feed_inputs(monkeypatch, "9", "1", "3", "1,2,3")
+    input_score_and_store()
+    records = json.loads((tmp_path / "amc_scores.json").read_text())
+    assert records[0]["correct"] == [1, 2, 3]
+
+
 def test_input_reminds_you_to_check_wrong_answers(monkeypatch, tmp_path, capsys):
     monkeypatch.chdir(tmp_path)
-    feed_inputs(monkeypatch, "5", "1,2,3")  # answered 5, only 3 right -> 2 wrong
+    feed_inputs(monkeypatch, "1", "5", "1,2,3")  # detailed: answered 5, only 3 right -> 2 wrong
     input_score_and_store()
     output = capsys.readouterr().out
     assert "2 question(s) incorrectly" in output
@@ -90,15 +127,15 @@ def test_input_reminds_you_to_check_wrong_answers(monkeypatch, tmp_path, capsys)
 
 def test_input_congratulates_when_all_answered_correct(monkeypatch, tmp_path, capsys):
     monkeypatch.chdir(tmp_path)
-    feed_inputs(monkeypatch, "3", "1,2,3")  # answered 3, all 3 right -> none wrong
+    feed_inputs(monkeypatch, "1", "3", "1,2,3")  # detailed: answered 3, all 3 right
     input_score_and_store()
     assert "Every question you answered was correct" in capsys.readouterr().out
 
 
 def test_input_rejects_more_correct_than_answered(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
-    # first try claims 2 answered but 5 correct (impossible), then a valid entry
-    feed_inputs(monkeypatch, "2", "1,2,3,4,5", "5", "1,2,3,4,5")
+    # detailed mode; first try claims 2 answered but 5 correct (impossible), then a valid entry
+    feed_inputs(monkeypatch, "1", "2", "1,2,3,4,5", "5", "1,2,3,4,5")
     input_score_and_store()
     records = json.loads((tmp_path / "amc_scores.json").read_text())
     assert records[-1]["answered"] == 5
@@ -107,7 +144,7 @@ def test_input_rejects_more_correct_than_answered(monkeypatch, tmp_path):
 def test_input_appends_without_losing_old_records(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     write_scores(tmp_path, [{"date": "2026-01-01", "score": 40.0, "correct": [1, 2]}])
-    feed_inputs(monkeypatch, "6", "1,2,3,4,5,6")  # 6/30 = 20%
+    feed_inputs(monkeypatch, "1", "6", "1,2,3,4,5,6")  # detailed: 6/30 = 20%
     input_score_and_store()
 
     records = json.loads((tmp_path / "amc_scores.json").read_text())
@@ -118,8 +155,8 @@ def test_input_appends_without_losing_old_records(monkeypatch, tmp_path):
 
 def test_input_rejects_bad_then_accepts_good(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
-    # bad answered count, then a valid pair
-    feed_inputs(monkeypatch, "not a number", "6", "1,2,3,4,5,6")
+    # detailed mode; bad answered count, then a valid pair
+    feed_inputs(monkeypatch, "1", "not a number", "6", "1,2,3,4,5,6")
     input_score_and_store()
 
     records = json.loads((tmp_path / "amc_scores.json").read_text())

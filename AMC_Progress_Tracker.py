@@ -41,6 +41,13 @@ def load_records():
     with open(SCORES_FILE, "r") as file:
         return json.load(file)
 
+# How many a session got right, whether it was logged in Detailed mode (a list of
+# question numbers) or Quick mode (just a count).
+def correct_count(record):
+    if "correct" in record:
+        return len(record["correct"])
+    return record.get("num_correct", 0)
+
 # Turn a string like "1, 2, 5, 8" into a clean, validated list of question numbers.
 # Raises ValueError if anything isn't a whole number in range, so the caller can re-prompt.
 def parse_question_numbers(raw, total=TOTAL_QUESTIONS):
@@ -55,35 +62,55 @@ def parse_question_numbers(raw, total=TOTAL_QUESTIONS):
         correct.add(number)
     return sorted(correct)
 
-# Make a function to allow the user to input how many they answered and which they got right, then store it
+# Ask the user which coaching mode they want to log in. Detailed is the more powerful
+# coach (it unlocks the section breakdown), so it is the recommended choice.
+def choose_coach_mode():
+    print("\nChoose your coach mode:")
+    print("  1) Detailed - enter WHICH questions you got right (unlocks your section breakdown). RECOMMENDED")
+    print("  2) Quick    - just enter HOW MANY you got right (faster, but no section breakdown)")
+    while True:
+        choice = input("Mode (1 or 2): ").strip()
+        if choice == "1":
+            return "detailed"
+        if choice == "2":
+            print("Tip: Detailed mode is the better coach - it tells you which sections to study.")
+            return "quick"
+        print("Please type 1 or 2.")
+
+# Make a function to allow the user to log a session in either coach mode, then store it
 def input_score_and_store():
+    mode = choose_coach_mode()
     while True:
         try:
             answered = int(input(f"How many questions did you answer (attempt)? 0-{TOTAL_QUESTIONS}: "))
             if not 0 <= answered <= TOTAL_QUESTIONS:
                 raise ValueError(f"You can only answer between 0 and {TOTAL_QUESTIONS} questions")
-            raw = input(f"Enter the question numbers you got RIGHT (e.g. 1,2,3,7), 1-{TOTAL_QUESTIONS}: ")
-            correct = parse_question_numbers(raw)
-            if len(correct) > answered:
-                raise ValueError(f"You marked {len(correct)} correct but only answered {answered}")
 
-            percentage_score = (len(correct) / TOTAL_QUESTIONS) * 100
-            wrong = answered - len(correct)
-            print(f"You got {len(correct)}/{TOTAL_QUESTIONS} right = {percentage_score:.2f}%")
+            record = {"date": str(datetime.date.today()), "answered": answered}
+            if mode == "detailed":
+                raw = input(f"Enter the question numbers you got RIGHT (e.g. 1,2,3,7), 1-{TOTAL_QUESTIONS}: ")
+                correct = parse_question_numbers(raw)
+                num_right = len(correct)
+                record["correct"] = correct
+            else:
+                num_right = int(input(f"How many did you get RIGHT? 0-{answered}: "))
+                record["num_correct"] = num_right
+            if num_right > answered:
+                raise ValueError(f"You marked {num_right} correct but only answered {answered}")
+
+            percentage_score = (num_right / TOTAL_QUESTIONS) * 100
+            record["score"] = round(percentage_score, 2)
+            wrong = answered - num_right
+            print(f"You got {num_right}/{TOTAL_QUESTIONS} right = {percentage_score:.2f}%")
             # Remind the user to review the questions they got wrong
             if wrong > 0:
                 print(f"⚠️  You answered {wrong} question(s) incorrectly - go back and check those before next time!")
             else:
                 print("✅ Every question you answered was correct - nice work!")
 
-            # Store each entry as a dictionary (with the per-question detail), save as JSON
+            # Store the record (a dictionary) and save the whole list as JSON
             records = load_records()
-            records.append({
-                "date": str(datetime.date.today()),
-                "score": round(percentage_score, 2),
-                "answered": answered,
-                "correct": correct,
-            })
+            records.append(record)
             with open(SCORES_FILE, "w") as file:
                 json.dump(records, file, indent=2)
             break
@@ -213,11 +240,11 @@ def recommend_focus_section(records):
 # Split your misses into blanks (ran out of time) vs wrong answers (knowledge gaps).
 # Returns the average number of each per session.
 def pacing_insight(records):
-    sessions = [r for r in records if "answered" in r and "correct" in r]
+    sessions = [r for r in records if "answered" in r]  # works for both coach modes
     if not sessions:
         return None
     avg_blank = sum(TOTAL_QUESTIONS - r["answered"] for r in sessions) / len(sessions)
-    avg_wrong = sum(r["answered"] - len(r["correct"]) for r in sessions) / len(sessions)
+    avg_wrong = sum(r["answered"] - correct_count(r) for r in sessions) / len(sessions)
     return avg_blank, avg_wrong
 
 # Pull everything together: growth rate, projection, readiness and a difficulty rating
@@ -255,6 +282,7 @@ def analyze_progress():
     print(f"Coach's advice:      {advice}")
 
     # ---- The headline feature: how you score across the Easy / Mid / Hard sections ----
+    # (Only available if you've logged at least one session in Detailed mode.)
     section_accuracy = accuracy_by_section(records)
     if section_accuracy:
         print("\n----- SECTION BREAKDOWN -----")
@@ -267,17 +295,19 @@ def analyze_progress():
             print(f"Focus section:      {focus}  (your biggest available gain)")
         else:
             print("Focus section:      none - every section is locked in. Aim higher!")
+    else:
+        print("\n(Log a session in Detailed mode to unlock your section breakdown.)")
 
-        # Split your misses into pacing (blanks) vs accuracy (wrong answers)
-        pacing = pacing_insight(records)
-        if pacing:
-            avg_blank, avg_wrong = pacing
-            if avg_blank >= 5:
-                print(f"Pacing check:       you leave ~{avg_blank:.0f} questions BLANK per test - work on speed.")
-            elif avg_wrong >= 5:
-                print(f"Pacing check:       you ANSWER plenty but ~{avg_wrong:.0f} are wrong - work on accuracy.")
-            else:
-                print(f"Pacing check:       balanced (~{avg_blank:.0f} blank, ~{avg_wrong:.0f} wrong per test).")
+    # Split your misses into pacing (blanks) vs accuracy (wrong answers) - works in both modes
+    pacing = pacing_insight(records)
+    if pacing:
+        avg_blank, avg_wrong = pacing
+        if avg_blank >= 5:
+            print(f"Pacing check:       you leave ~{avg_blank:.0f} questions BLANK per test - work on speed.")
+        elif avg_wrong >= 5:
+            print(f"Pacing check:       you ANSWER plenty but ~{avg_wrong:.0f} are wrong - work on accuracy.")
+        else:
+            print(f"Pacing check:       balanced (~{avg_blank:.0f} blank, ~{avg_wrong:.0f} wrong per test).")
     print("=================================\n")
 
 # Make a function to read the scores from the file and print them out as a graph using matplotlib
