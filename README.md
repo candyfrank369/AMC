@@ -95,7 +95,7 @@ TARGET_SCORE = 100.0  # the score you're aiming to reach by competition day
 The project comes with a full pytest suite. Run it with:
 
 ```bash
-python3 -m pytest AMC_Progress_Tracker_Test.py -v
+pytest AMC_Progress_Tracker_Test.py
 ```
 
 All tests should pass. They cover the date countdown, score input and validation, growth-rate maths, score projection (including the 0–100% cap), target-pace calculations, difficulty recommendations, and the graph — using fake input and a non-popup graph backend so nothing interrupts the run.
