@@ -23,6 +23,17 @@ Focus section:      Mid (Q11-20)  (your biggest available gain)
 Pacing check:       you leave ~10 questions BLANK per test - work on speed.
 ```
 
+## Two coach modes
+
+When you log a session you pick how much detail to give:
+
+| Mode | You enter | You unlock |
+|------|-----------|------------|
+| **Detailed** ⭐ *(recommended)* | *Which* questions you got right (e.g. `1,2,3,7`) | Everything below **+ the section breakdown** that tells you exactly what to study |
+| **Quick** | *How many* you got right (e.g. `11`) | Score trend, projection, target pace, difficulty level, and pacing check |
+
+**Detailed is the better coach** — it's the only mode that can see *where* your points are leaking, so it can name the section to focus on. Quick mode is just for when you're in a hurry; the program will gently nudge you toward Detailed.
+
 ## What else it does
 
 - 📅 **Counts down** the days until the next AMC competition.
@@ -53,10 +64,11 @@ pip install matplotlib
    ```
 
 2. It shows today's date and the days left until the competition.
-3. Enter **how many questions you answered** (attempted) this session.
-4. Enter the question numbers you got right, e.g. `1,2,3,7,11`. It works out how many you got wrong and **reminds you to go back and check them.**
-5. Read your analysis (growth rate, projection, target status, recommended level, **your section breakdown and pacing check**) and view the two graphs.
-6. Choose `y` to log another session, or `n` to quit.
+3. Pick your **coach mode**: `1` Detailed (recommended) or `2` Quick.
+4. Enter **how many questions you answered** (attempted) this session.
+5. Then either the question numbers you got right (Detailed, e.g. `1,2,3,7,11`) or just how many (Quick). It works out how many you got wrong and **reminds you to go back and check them.**
+6. Read your analysis (growth rate, projection, target status, recommended level, **section breakdown and pacing check**) and view the two graphs.
+7. Choose `y` to log another session, or `n` to quit.
 
 Your scores are saved between runs, so the more you log, the more accurate your trend and projection become.
 
