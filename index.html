@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>AMC Progress Tracker · 备考脉搏</title>
+<meta name="theme-color" content="#0c0b09" />
+<link rel="manifest" href="manifest.json" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="AMC Tracker" />
+<style>
+  :root{
+    /* Black Gold · 黑金 */
+    --bg:#0c0b09; --bg2:#141210; --card:#17150f; --card2:#211d14;
+    --gold:#e8c84e; --gold-deep:#c9a227; --gold-soft:#f3d97a; --amber:#f59f00;
+    --green:#51cf66; --red:#ff6b6b; --text:#f4efe1; --muted:#a89f86;
+    --line:#34301f;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:radial-gradient(circle at 18% -10%,#2a230d 0%,transparent 55%),
+               radial-gradient(circle at 92% 0%,#221b09 0%,transparent 48%),
+               linear-gradient(165deg,var(--bg),var(--bg2));
+    background-attachment:fixed; color:var(--text);
+    min-height:100vh; padding-bottom:90px;
+  }
+  .wrap{max-width:680px; margin:0 auto; padding:16px;}
+  header{display:flex; align-items:center; justify-content:space-between; padding:8px 4px 6px;}
+  .logo{display:flex; align-items:center; gap:10px; font-weight:800; font-size:18px;}
+  .logo .dot{width:11px; height:11px; border-radius:50%; background:var(--gold); box-shadow:0 0 14px var(--gold); animation:pulse 1.6s infinite;}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.55}}
+  .lang-btn{background:var(--card2); border:1px solid var(--line); color:var(--text); border-radius:20px; padding:6px 14px; font-size:13px; cursor:pointer; font-weight:600;}
+
+  .greet{padding:6px 6px 14px;}
+  .greet .hi{font-size:22px; font-weight:800; background:linear-gradient(90deg,var(--gold-soft),var(--gold),var(--gold-deep)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;}
+  .greet .quote{font-size:13px; color:var(--muted); margin-top:5px; line-height:1.5;}
+
+  .countdown{display:flex; align-items:center; justify-content:center; gap:10px; background:linear-gradient(90deg,rgba(232,200,78,.12),rgba(201,162,39,.14)); border:1px solid var(--line); border-radius:14px; padding:10px 14px; margin-bottom:16px; font-size:14px;}
+  .countdown b{font-size:22px; color:var(--gold); font-weight:800; letter-spacing:.5px;}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:18px; margin-bottom:16px; box-shadow:0 8px 30px rgba(0,0,0,.5);}
+  .card h2{margin:0 0 14px; font-size:14px; letter-spacing:.6px; color:var(--muted); text-transform:uppercase; font-weight:700;}
+
+  .goal-top{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:12px;}
+  .goal-now{font-size:30px; font-weight:800;}
+  .goal-sub{font-size:13px; color:var(--muted);}
+  .bar{height:14px; background:var(--card2); border-radius:10px; overflow:hidden; margin:6px 0 12px; position:relative;}
+  .bar > div{height:100%; background:linear-gradient(90deg,var(--gold-deep),var(--gold),var(--gold-soft)); border-radius:10px; transition:width .7s cubic-bezier(.2,.8,.2,1); width:0; box-shadow:0 0 12px rgba(232,200,78,.5);}
+  .goal-stats{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:6px;}
+  .stat{background:var(--card2); border-radius:12px; padding:10px; text-align:center;}
+  .stat .v{font-size:17px; font-weight:700;}
+  .stat .l{font-size:11px; color:var(--muted); margin-top:2px;}
+  .badge{display:inline-block; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:700;}
+  .badge.ok{background:rgba(81,207,102,.16); color:var(--green);}
+  .badge.behind{background:rgba(255,107,107,.16); color:var(--red);}
+
+  .seg{display:flex; gap:8px; margin-bottom:12px;}
+  .seg button{flex:1; padding:12px; border-radius:12px; border:1px solid var(--line); background:var(--card2); color:var(--text); font-weight:700; font-size:15px; cursor:pointer; transition:.2s;}
+  .seg button.on{background:linear-gradient(90deg,var(--gold),var(--gold-deep)); color:#1a1500; border-color:var(--gold);}
+  label{display:block; font-size:12px; color:var(--muted); margin:10px 0 5px; font-weight:600;}
+  input{width:100%; padding:13px; border-radius:12px; border:1px solid var(--line); background:var(--card2); color:var(--text); font-size:16px; outline:none;}
+  input:focus{border-color:var(--gold); box-shadow:0 0 0 3px rgba(232,200,78,.18);}
+  .row{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+
+  .qgrid{display:grid; grid-template-columns:repeat(6,1fr); gap:7px; margin-top:6px;}
+  .qbtn{aspect-ratio:1; border:1px solid var(--line); background:var(--card2); color:var(--muted); border-radius:9px; font-size:14px; font-weight:700; cursor:pointer; transition:.12s; position:relative;}
+  .qbtn.on{background:linear-gradient(135deg,var(--gold-soft),var(--gold-deep)); color:#1a1500; border-color:var(--gold); box-shadow:0 0 8px rgba(232,200,78,.5);}
+  .qsec{font-size:10px; color:var(--muted); margin:10px 0 2px; letter-spacing:.5px; font-weight:700; text-transform:uppercase;}
+  .livescore{text-align:center; margin:14px 0 2px; font-size:14px; color:var(--muted);}
+  .livescore b{font-size:26px; color:var(--gold); font-weight:800;}
+
+  .add-btn{width:100%; margin-top:16px; padding:15px; border:none; border-radius:14px; background:linear-gradient(90deg,var(--gold),var(--gold-deep)); color:#1a1500; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 6px 20px rgba(232,200,78,.3);}
+  .add-btn:active{transform:scale(.98);}
+
+  .rec{display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--line);}
+  .rec:last-child{border-bottom:none;}
+  .rec .info{display:flex; flex-direction:column; gap:3px;}
+  .rec .biz{font-weight:700; font-size:15px;}
+  .rec .note{font-size:12px; color:var(--muted);}
+  .rec .right{display:flex; align-items:center; gap:12px;}
+  .amt{font-weight:800; font-size:16px; color:var(--gold);}
+  .del{background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer; padding:4px;}
+  .empty{color:var(--muted); text-align:center; padding:20px 0; font-size:14px;}
+
+  /* sections */
+  .sec-row{margin:14px 0;}
+  .sec-head{display:flex; justify-content:space-between; font-size:14px; margin-bottom:5px;}
+  .sec-head .pct{font-weight:800;}
+  .sbar{height:10px; background:var(--card2); border-radius:8px; overflow:hidden;}
+  .sbar > div{height:100%; border-radius:8px; transition:width .6s;}
+  .tag{font-size:11px; padding:2px 8px; border-radius:10px; font-weight:700; margin-left:6px;}
+  .locked{color:var(--gold); } .lockedb{background:var(--gold);}
+  .shaky{color:var(--amber);} .shakyb{background:var(--amber);}
+  .needs{color:var(--red);} .needsb{background:var(--red);}
+
+  .heat{display:grid; grid-template-columns:repeat(10,1fr); gap:5px; margin-top:8px;}
+  .hcell{aspect-ratio:1; border-radius:6px; font-size:10px; display:flex; align-items:center; justify-content:center; color:#1a1500; font-weight:700; border:1px solid var(--line);}
+  .legend{display:flex; gap:14px; flex-wrap:wrap; margin-top:12px; font-size:11px; color:var(--muted);}
+  .legend i{display:inline-block; width:11px; height:11px; border-radius:3px; margin-right:4px; vertical-align:middle;}
+
+  .coach{background:var(--card2); border-left:3px solid var(--gold); border-radius:10px; padding:12px 14px; font-size:14px; line-height:1.6;}
+  .coach .lvl{color:var(--gold); font-weight:800;}
+
+  nav{position:fixed; bottom:0; left:0; right:0; background:rgba(14,12,8,.95); backdrop-filter:blur(12px); border-top:1px solid var(--line); display:flex; justify-content:space-around; padding:8px 0 max(8px,env(safe-area-inset-bottom));}
+  nav button{background:none; border:none; color:var(--muted); font-size:11px; display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; padding:6px 16px; font-weight:600;}
+  nav button .ic{font-size:20px;}
+  nav button.active{color:var(--gold);}
+
+  .view{display:none;} .view.active{display:block; animation:fade .3s;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .tools{display:flex; gap:10px; margin-top:8px;}
+  .tools button{flex:1; padding:11px; border-radius:12px; border:1px solid var(--line); background:var(--card2); color:var(--text); font-weight:600; cursor:pointer; font-size:13px;}
+  .hint{font-size:12px; color:var(--muted); line-height:1.6; margin-top:10px;}
+
+  #celebrate{position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.7); backdrop-filter:blur(4px);}
+  #celebrate.show{display:flex; animation:fade .3s;}
+  .cele-card{background:linear-gradient(160deg,var(--card2),var(--card)); border:1px solid var(--gold); border-radius:22px; padding:30px 34px; text-align:center; box-shadow:0 12px 50px rgba(232,200,78,.4); max-width:300px;}
+  .cele-card .big{font-size:54px; margin-bottom:8px;}
+  .cele-card .ttl{font-size:22px; font-weight:800; margin-bottom:6px; color:var(--gold);}
+  .cele-card .sub{font-size:14px; color:var(--muted); margin-bottom:18px; line-height:1.6;}
+  .cele-card button{padding:11px 26px; border:none; border-radius:12px; background:linear-gradient(90deg,var(--gold),var(--gold-deep)); color:#1a1500; font-weight:800; font-size:15px; cursor:pointer;}
+  .confetti{position:fixed; top:-10px; font-size:20px; pointer-events:none; z-index:49; animation:fall linear forwards;}
+  @keyframes fall{to{transform:translateY(105vh) rotate(540deg); opacity:0;}}
+  .chart-wrap{margin-top:6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><span class="dot"></span><span>AMC Progress Tracker</span></div>
+    <button class="lang-btn" id="langBtn">EN</button>
+  </header>
+
+  <div class="greet">
+    <div class="hi" id="greetHi">你好，Frank</div>
+    <div class="quote" id="greetQuote"></div>
+  </div>
+
+  <div class="countdown">
+    <span>📅</span>
+    <span data-i18n="cdPre">距 AMC 比赛还剩</span>
+    <b id="cdDays">0</b>
+    <span data-i18n="cdPost">天</span>
+  </div>
+
+  <!-- ===== LOG ===== -->
+  <div class="view active" id="view-log">
+    <div class="card">
+      <h2 data-i18n="statusTitle">备考状态</h2>
+      <div class="goal-top">
+        <div><div class="goal-now" id="latestScore">—</div>
+        <div class="goal-sub" data-i18n="latestLabel">最近一次得分</div></div>
+        <div style="text-align:right"><div class="goal-now" id="projScore" style="color:var(--gold)">—</div>
+        <div class="goal-sub" data-i18n="projLabel">预测比赛分</div></div>
+      </div>
+      <div class="bar"><div id="latestBar"></div></div>
+      <div class="goal-stats">
+        <div class="stat"><div class="v" id="stBest">—</div><div class="l" data-i18n="stBest">最佳</div></div>
+        <div class="stat"><div class="v" id="stStreak">0</div><div class="l" data-i18n="stStreak">连续练习</div></div>
+        <div class="stat"><div class="v" id="stStatus">—</div><div class="l" data-i18n="stStatus">进度</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="addTitle">记录一次练习</h2>
+      <div class="seg">
+        <button id="segDetailed" data-i18n="detailed">详细模式</button>
+        <button id="segQuick" data-i18n="quick">快速模式</button>
+      </div>
+      <div class="row">
+        <div><label data-i18n="date">日期</label><input id="dateIn" type="date" /></div>
+        <div><label data-i18n="answered">答题数 (0-30)</label><input id="answeredIn" type="number" inputmode="numeric" min="0" max="30" placeholder="30" /></div>
+      </div>
+
+      <div id="detailedBlock">
+        <label data-i18n="tapHint">点选答对的题号</label>
+        <div class="qsec" data-i18n="secEasy">简单 Q1–10</div>
+        <div class="qgrid" id="grid-easy"></div>
+        <div class="qsec" data-i18n="secMid">中等 Q11–20</div>
+        <div class="qgrid" id="grid-mid"></div>
+        <div class="qsec" data-i18n="secHard">困难 Q21–25</div>
+        <div class="qgrid" id="grid-hard"></div>
+        <div class="qsec" data-i18n="secVhard">极难 Q26–30</div>
+        <div class="qgrid" id="grid-vhard"></div>
+      </div>
+
+      <div id="quickBlock" style="display:none">
+        <label data-i18n="numCorrect">答对题数 (0-30)</label>
+        <input id="numCorrectIn" type="number" inputmode="numeric" min="0" max="30" placeholder="0" />
+      </div>
+
+      <div class="livescore"><span data-i18n="thisScore">本次得分</span> <b id="liveScore">0%</b></div>
+      <button class="add-btn" id="addBtn" data-i18n="addBtn">＋ 保存这次练习</button>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="recentTitle">最近练习</h2>
+      <div id="recentList"></div>
+    </div>
+  </div>
+
+  <!-- ===== PROGRESS ===== -->
+  <div class="view" id="view-progress">
+    <div class="card">
+      <h2 data-i18n="trendTitle">分数趋势</h2>
+      <div class="chart-wrap" id="chartWrap"></div>
+    </div>
+    <div class="card">
+      <h2 data-i18n="projTitle">提分预测</h2>
+      <div class="goal-stats">
+        <div class="stat"><div class="v" id="pgWeekly">—</div><div class="l" data-i18n="pgWeekly">每周提分</div></div>
+        <div class="stat"><div class="v" id="pgProj">—</div><div class="l" data-i18n="pgProj">预测比赛分</div></div>
+        <div class="stat"><div class="v" id="pgNeed">—</div><div class="l" data-i18n="pgNeed">需每周</div></div>
+      </div>
+      <div style="margin-top:14px"><label data-i18n="targetLabel">目标分 (0-100)</label><input id="targetIn" type="number" min="0" max="100" /></div>
+      <p class="hint" id="projHint"></p>
+    </div>
+  </div>
+
+  <!-- ===== DIAGNOSE ===== -->
+  <div class="view" id="view-diag">
+    <div class="card">
+      <h2 data-i18n="secTitle">区间正确率</h2>
+      <div id="sectionBox"></div>
+      <p class="hint" id="wallHint"></p>
+    </div>
+    <div class="card">
+      <h2 data-i18n="heatTitle">逐题正确率</h2>
+      <div class="heat" id="heatBox"></div>
+      <div class="legend">
+        <span><i style="background:var(--gold)"></i><span data-i18n="lgLocked">≥80% 已掌握</span></span>
+        <span><i style="background:var(--amber)"></i><span data-i18n="lgShaky">50–79% 不稳</span></span>
+        <span><i style="background:var(--red)"></i><span data-i18n="lgNeeds">&lt;50% 待加强</span></span>
+        <span><i style="background:var(--card2)"></i><span data-i18n="lgNone">无数据</span></span>
+      </div>
+      <p class="hint" id="focusHint"></p>
+    </div>
+    <div class="card">
+      <h2 data-i18n="coachTitle">训练建议</h2>
+      <div class="coach" id="coachBox"></div>
+      <p class="hint" id="paceHint" style="margin-top:12px"></p>
+    </div>
+    <div class="card">
+      <h2 data-i18n="dataTitle">数据备份</h2>
+      <div class="tools">
+        <button id="exportBtn" data-i18n="export">导出 JSON</button>
+        <button id="importBtn" data-i18n="import">导入 JSON</button>
+      </div>
+      <input id="fileIn" type="file" accept="application/json" style="display:none" />
+      <p class="hint" data-i18n="dataHint">数据保存在本机浏览器中。导入格式兼容原 Python 工具的 amc_scores.json。</p>
+    </div>
+  </div>
+</div>
+
+<nav>
+  <button data-tab="log" class="active"><span class="ic">📝</span><span data-i18n="navLog">记录</span></button>
+  <button data-tab="progress"><span class="ic">📈</span><span data-i18n="navProgress">趋势</span></button>
+  <button data-tab="diag"><span class="ic">🎯</span><span data-i18n="navDiag">诊断</span></button>
+</nav>
+
+<div id="celebrate"><div class="cele-card">
+  <div class="big" id="celeEmoji">🎉</div>
+  <div class="ttl" id="celeTtl"></div>
+  <div class="sub" id="celeSub"></div>
+  <button id="celeClose" data-i18n="celeBtn">继续训练 →</button>
+</div></div>
+
+<script>
+/* ============ Config ============ */
+const NAME = "Frank";
+const COMP_DATE = "2026-08-04";   // AMC competition (early August)
+const TOTAL_Q = 30;
+const SECTIONS = [
+  {key:"easy",  zh:"简单",     en:"Easy",      a:1,  b:10},
+  {key:"mid",   zh:"中等",     en:"Mid",       a:11, b:20},
+  {key:"hard",  zh:"困难",     en:"Hard",      a:21, b:25},
+  {key:"vhard", zh:"极难",     en:"Very Hard", a:26, b:30},
+];
+
+const I18N = {
+  zh:{ statusTitle:"备考状态", latestLabel:"最近一次得分", projLabel:"预测比赛分",
+    stBest:"最佳", stStreak:"连续练习", stStatus:"进度",
+    addTitle:"记录一次练习", detailed:"详细模式", quick:"快速模式", date:"日期",
+    answered:"答题数 (0-30)", tapHint:"点选答对的题号",
+    secEasy:"简单 Q1–10", secMid:"中等 Q11–20", secHard:"困难 Q21–25", secVhard:"极难 Q26–30",
+    numCorrect:"答对题数 (0-30)", thisScore:"本次得分", addBtn:"＋ 保存这次练习",
+    recentTitle:"最近练习", trendTitle:"分数趋势", projTitle:"提分预测",
+    pgWeekly:"每周提分", pgProj:"预测比赛分", pgNeed:"需每周", targetLabel:"目标分 (0-100)",
+    secTitle:"区间正确率", heatTitle:"逐题正确率", coachTitle:"训练建议", dataTitle:"数据备份",
+    export:"导出 JSON", import:"导入 JSON",
+    dataHint:"数据保存在本机浏览器中。导入格式兼容原 Python 工具的 amc_scores.json。",
+    navLog:"记录", navProgress:"趋势", navDiag:"诊断",
+    lgLocked:"≥80% 已掌握", lgShaky:"50–79% 不稳", lgNeeds:"<50% 待加强", lgNone:"无数据",
+    cdPre:"距 AMC 比赛还剩", cdPost:"天", celeBtn:"继续训练 →",
+    gM:"早上好", gA:"下午好", gE:"晚上好", gN:"夜深了", day:"天",
+    emptyRec:"还没有练习记录，记录第一次吧 📝", needData:"先记录一次练习再看分析", needTwo:"至少 2 次练习才能算趋势",
+    onTrack:"达标中", behind:"需加速", locked:"已掌握", shaky:"不稳", needs:"待加强",
+    detailOnly:"区间分析仅统计「详细模式」的记录",
+    wall:n=>`失分墙在第 ${n} 题：从这里开始正确率跌破 50%，往前的题已基本稳住。`,
+    wallNone:"目前没有明显的失分墙，保持住！",
+    focus:qs=>`优先攻克：第 ${qs.join("、")} 题（正确率不足 80%，性价比最高的提分点）。`,
+    focusNone:"各题正确率都不错，继续保持 👍",
+    pace:n=>`节奏：你平均每套留 ${n} 题空白 —— 空题是速度问题，做错是知识问题。`,
+    projLine:(p,need,ok)=>`按当前势头，比赛预计 ${p}%。目标需每周提 ${need}%，${ok?"目前达标中 ✅":"需要再加速 ⚡"}。`,
+    coach:[
+      {max:40, lvl:"夯实基础", txt:"把 Easy（Q1–10）练到自动反应，先把该拿的分稳稳拿到。"},
+      {max:60, lvl:"进阶",     txt:"稳住 Easy（Q1–10），向 Mid（Q11–20）进攻。"},
+      {max:80, lvl:"高阶",     txt:"拿下 Mid（Q11–20），开始攻 Hard（Q21–25）。"},
+      {max:101,lvl:"奥赛级",   txt:"主攻 Very Hard（Q26–30），加练 AIME 难度题。"},
+    ],
+    celeTtl:p=>`突破 ${p}%！`,
+    celeSub:{40:"基础正在成形，稳住别松劲 👏",60:"进入高阶区，势头很好 🚀",80:"奥赛级在望，再冲一把 💪",100:"🏆 满分！你做到了！"},
+    quotes:[
+      "你最快的提分，来自最接近拿下的那个区间。",
+      "每做一套，就离比赛更稳一分。",
+      "稳住 Easy，再啃 Mid，分数自然涨。",
+      "空着的题是速度问题，做错的题是知识问题。",
+      "今天多练一套，比赛少慌一分。",
+      "进步是练出来的，不是想出来的。",
+      "盯住失分墙，一题一题往上推。",
+      "坚持记录的人，提分从不靠运气。",
+    ] },
+  en:{ statusTitle:"Prep status", latestLabel:"Latest score", projLabel:"Projected",
+    stBest:"Best", stStreak:"Streak", stStatus:"Status",
+    addTitle:"Log a practice", detailed:"Detailed", quick:"Quick", date:"Date",
+    answered:"Answered (0-30)", tapHint:"Tap the questions you got right",
+    secEasy:"Easy Q1–10", secMid:"Mid Q11–20", secHard:"Hard Q21–25", secVhard:"Very Hard Q26–30",
+    numCorrect:"Correct (0-30)", thisScore:"This score", addBtn:"＋ Save practice",
+    recentTitle:"Recent practices", trendTitle:"Score trend", projTitle:"Projection",
+    pgWeekly:"Weekly gain", pgProj:"Projected", pgNeed:"Need / wk", targetLabel:"Target (0-100)",
+    secTitle:"Section accuracy", heatTitle:"Per-question accuracy", coachTitle:"Coaching", dataTitle:"Data backup",
+    export:"Export JSON", import:"Import JSON",
+    dataHint:"Data stays in this browser. Import is compatible with the original Python tool's amc_scores.json.",
+    navLog:"Log", navProgress:"Trend", navDiag:"Diagnose",
+    lgLocked:"≥80% locked in", lgShaky:"50–79% shaky", lgNeeds:"<50% needs work", lgNone:"no data",
+    cdPre:"Days to AMC:", cdPost:"d", celeBtn:"Keep training →",
+    gM:"Good morning", gA:"Good afternoon", gE:"Good evening", gN:"Late night", day:"d",
+    emptyRec:"No practices yet — log your first 📝", needData:"Log a practice first", needTwo:"Need ≥2 practices for a trend",
+    onTrack:"On track", behind:"Behind", locked:"locked in", shaky:"shaky", needs:"needs work",
+    detailOnly:"Section analysis uses Detailed-mode records only",
+    wall:n=>`The wall is at Q${n}: accuracy drops below 50% from here; earlier questions are mostly locked in.`,
+    wallNone:"No clear wall right now — keep it up!",
+    focus:qs=>`Focus first: Q${qs.join(", Q")} (below 80% — your highest-value quick wins).`,
+    focusNone:"Accuracy looks solid across the board 👍",
+    pace:n=>`Pacing: you leave ~${n} blank per test — blanks are a speed problem, wrong answers a knowledge gap.`,
+    projLine:(p,need,ok)=>`At current pace, projected ${p}%. You need +${need}%/week for the target — ${ok?"on track ✅":"speed up ⚡"}.`,
+    coach:[
+      {max:40, lvl:"Foundations", txt:"Lock in the Easy section (Q1–10) until it's automatic."},
+      {max:60, lvl:"Intermediate",txt:"Secure Easy (Q1–10) and push into Mid (Q11–20)."},
+      {max:80, lvl:"Advanced",    txt:"Own Mid (Q11–20) and start attacking Hard (Q21–25)."},
+      {max:101,lvl:"Olympiad",    txt:"Go after Very Hard (Q26–30) and add AIME-level practice."},
+    ],
+    celeTtl:p=>`${p}% breakthrough!`,
+    celeSub:{40:"Your foundation is forming — keep going 👏",60:"Into advanced territory — great momentum 🚀",80:"Olympiad level in sight — push 💪",100:"🏆 Perfect score! You did it!"},
+    quotes:[
+      "Your fastest gains come from the section you're closest to locking in.",
+      "Every practice set makes competition day steadier.",
+      "Lock Easy, then push Mid — the score follows.",
+      "Blanks are a speed problem; wrong answers are a knowledge gap.",
+      "One more set today, one less panic on the day.",
+      "Progress is practiced, not wished for.",
+      "Find the wall, push it one question at a time.",
+      "Those who track don't rely on luck to improve.",
+    ] },
+};
+
+/* ============ State ============ */
+let lang = localStorage.getItem("amc_lang") || "zh";
+let sessions = load();
+let curMode = "detailed";
+let correctSet = new Set();
+let target = parseFloat(localStorage.getItem("amc_target")||"100");
+
+function load(){ try{ return JSON.parse(localStorage.getItem("amc_sessions")||"[]"); }catch(e){ return []; } }
+function save(){ localStorage.setItem("amc_sessions", JSON.stringify(sessions)); }
+function t(k){ return I18N[lang][k]; }
+function fmt(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function todayStr(){ return fmt(new Date()); }
+function round1(n){ return Math.round(n*10)/10; }
+function pctOf(c){ return round1(c/TOTAL_Q*100); }
+function daysLeft(){ const d=Math.ceil((new Date(COMP_DATE+"T23:59:59")-new Date())/86400000); return d>0?d:0; }
+function sorted(){ return sessions.slice().sort((a,b)=> a.date<b.date?-1:1); }
+function correctCount(s){ return s.mode==="detailed" ? (s.correct||[]).length : (s.num_correct||0); }
+
+/* ============ Analytics ============ */
+function regression(){
+  const s=sorted(); if(s.length<2) return null;
+  const t0=new Date(s[0].date);
+  const xs=s.map(r=>Math.round((new Date(r.date)-t0)/86400000));
+  const ys=s.map(r=>r.score);
+  const n=xs.length, mx=xs.reduce((a,b)=>a+b,0)/n, my=ys.reduce((a,b)=>a+b,0)/n;
+  let num=0, den=0;
+  for(let i=0;i<n;i++){ num+=(xs[i]-mx)*(ys[i]-my); den+=(xs[i]-mx)**2; }
+  if(den===0) return {slope:0};
+  return {slope:num/den};
+}
+function projection(){
+  const s=sorted(); if(!s.length) return null;
+  const latest=s[s.length-1].score;
+  const reg=regression(); const slope=reg?reg.slope:0;
+  const dl=daysLeft();
+  const proj=Math.max(0,Math.min(100, latest+slope*dl));
+  const weekly=slope*7;
+  const weeksLeft=dl/7;
+  const need=weeksLeft>0 ? Math.max(0,(target-latest)/weeksLeft) : 0;
+  const ok=weekly>=need-1e-9;
+  return {latest, proj, weekly, need, ok};
+}
+function qAccuracy(){
+  const det=sessions.filter(s=>s.mode==="detailed");
+  const acc={}; for(let q=1;q<=TOTAL_Q;q++) acc[q]=null;
+  if(!det.length) return {acc, n:0};
+  for(let q=1;q<=TOTAL_Q;q++){
+    let hits=0; det.forEach(s=>{ if((s.correct||[]).includes(q)) hits++; });
+    acc[q]=hits/det.length;
+  }
+  return {acc, n:det.length};
+}
+function sectionAcc(){
+  const {acc,n}=qAccuracy(); if(!n) return null;
+  return SECTIONS.map(sec=>{
+    let sum=0,cnt=0; for(let q=sec.a;q<=sec.b;q++){ sum+=acc[q]; cnt++; }
+    return {...sec, acc:sum/cnt};
+  });
+}
+function theWall(){
+  const {acc,n}=qAccuracy(); if(!n) return null;
+  for(let q=1;q<=TOTAL_Q;q++){ if(acc[q]<0.5) return q; }
+  return 0;
+}
+function focusQs(){
+  const {acc,n}=qAccuracy(); if(!n) return null;
+  const low=[]; for(let q=1;q<=TOTAL_Q;q++){ if(acc[q]<0.8) low.push(q); }
+  return low.slice(0,3);
+}
+function avgBlanks(){
+  if(!sessions.length) return 0;
+  const avgAns=sessions.reduce((a,s)=>a+(s.answered||0),0)/sessions.length;
+  return Math.round(TOTAL_Q-avgAns);
+}
+function streak(){
+  if(!sessions.length) return 0;
+  const set=new Set(sessions.map(s=>s.date));
+  let n=0; const d=new Date();
+  if(!set.has(fmt(d))) d.setDate(d.getDate()-1);
+  while(set.has(fmt(d))){ n++; d.setDate(d.getDate()-1); }
+  return n;
+}
+
+/* ============ Greeting ============ */
+function greeting(){ const h=new Date().getHours(); if(h<5)return t("gN"); if(h<12)return t("gM"); if(h<18)return t("gA"); return t("gE"); }
+function dailyQuote(){
+  const day=Math.floor((new Date()-new Date(new Date().getFullYear(),0,0))/86400000);
+  return t("quotes")[day % t("quotes").length];
+}
+
+/* ============ Celebration ============ */
+function checkMilestone(){
+  const s=sorted(); if(!s.length) return;
+  const latest=s[s.length-1].score;
+  const prev=parseFloat(localStorage.getItem("amc_milestone")||"0");
+  let reached=0; [40,60,80,100].forEach(m=>{ if(latest>=m) reached=m; });
+  if(reached>prev){ localStorage.setItem("amc_milestone",String(reached)); celebrate(reached); }
+  else if(reached<prev){ localStorage.setItem("amc_milestone",String(reached)); }
+}
+function celebrate(m){
+  document.getElementById("celeEmoji").textContent = m===100?"🏆":"🎉";
+  document.getElementById("celeTtl").textContent = t("celeTtl")(m);
+  document.getElementById("celeSub").textContent = t("celeSub")[m];
+  document.getElementById("celebrate").classList.add("show");
+  const emojis=["🎉","✨","🌟","🎊","⭐","💛","🥳"];
+  for(let i=0;i<32;i++){ const c=document.createElement("div"); c.className="confetti";
+    c.textContent=emojis[i%emojis.length]; c.style.left=(Math.random()*100)+"vw";
+    c.style.animationDuration=(2+Math.random()*2)+"s"; c.style.animationDelay=(Math.random()*0.4)+"s";
+    document.body.appendChild(c); setTimeout(()=>c.remove(),4500); }
+}
+document.getElementById("celeClose").onclick=()=>document.getElementById("celebrate").classList.remove("show");
+
+/* ============ Render: log/status ============ */
+function renderGreet(){
+  document.getElementById("greetHi").textContent = lang==="zh" ? greeting()+"，"+NAME+" ✨" : greeting()+", "+NAME+" ✨";
+  document.getElementById("greetQuote").textContent = dailyQuote();
+  document.getElementById("cdDays").textContent = daysLeft();
+}
+function renderStatus(){
+  const s=sorted();
+  const latest=s.length? s[s.length-1].score : null;
+  const best=s.length? Math.max(...s.map(r=>r.score)) : null;
+  document.getElementById("latestScore").textContent = latest===null?"—":latest+"%";
+  document.getElementById("stBest").textContent = best===null?"—":best+"%";
+  document.getElementById("latestBar").style.width = (latest||0)+"%";
+  document.getElementById("stStreak").textContent = streak()+" 🔥";
+  const pr=projection();
+  document.getElementById("projScore").textContent = pr? round1(pr.proj)+"%" : "—";
+  const stEl=document.getElementById("stStatus");
+  if(pr && s.length>=2){ stEl.innerHTML = `<span class="badge ${pr.ok?'ok':'behind'}">${pr.ok?t("onTrack"):t("behind")}</span>`; }
+  else stEl.textContent="—";
+}
+function recItem(s, idx){
+  const cc=correctCount(s);
+  const div=document.createElement("div"); div.className="rec";
+  const modeTag = s.mode==="detailed"? (lang==="zh"?"详细":"detailed") : (lang==="zh"?"快速":"quick");
+  div.innerHTML=`<div class="info"><span class="biz">${s.score}%　<span style="color:var(--muted);font-weight:400;font-size:13px">${cc}/${TOTAL_Q}</span></span>
+    <span class="note">${s.date} · ${modeTag} · ${lang==="zh"?"答":""}${s.answered||0}${lang==="zh"?"题":" answered"}</span></div>
+    <div class="right"><button class="del" data-i="${idx}">✕</button></div>`;
+  return div;
+}
+function renderRecent(){
+  const list=document.getElementById("recentList"); list.innerHTML="";
+  if(!sessions.length){ list.innerHTML=`<div class="empty">${t("emptyRec")}</div>`; return; }
+  const items=sessions.map((s,i)=>({s,i})).sort((a,b)=> a.s.date<b.s.date?1:-1).slice(0,12);
+  items.forEach(x=>list.appendChild(recItem(x.s,x.i)));
+}
+
+/* ============ Render: progress ============ */
+function renderChart(){
+  const wrap=document.getElementById("chartWrap");
+  const s=sorted();
+  if(s.length<1){ wrap.innerHTML=`<div class="empty">${t("needData")}</div>`; return; }
+  const W=320,H=140,pad=22;
+  const t0=new Date(s[0].date), tN=new Date(s[s.length-1].date);
+  const span=Math.max(1,(tN-t0)/86400000);
+  const X=r=> pad + ((new Date(r.date)-t0)/86400000)/span*(W-2*pad);
+  const Y=v=> H-pad - (v/100)*(H-2*pad);
+  let pts=s.map(r=>`${X(r).toFixed(1)},${Y(r.score).toFixed(1)}`).join(" ");
+  if(s.length===1){ const x=X(s[0]); pts=`${pad},${Y(s[0].score).toFixed(1)} ${(W-pad)},${Y(s[0].score).toFixed(1)}`; }
+  const ty=Y(target);
+  let dots=s.map(r=>`<circle cx="${X(r).toFixed(1)}" cy="${Y(r.score).toFixed(1)}" r="3.5" fill="#e8c84e"/>`).join("");
+  wrap.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">
+    <line x1="${pad}" y1="${ty}" x2="${W-pad}" y2="${ty}" stroke="#c9a227" stroke-dasharray="4 4" stroke-width="1" opacity="0.7"/>
+    <text x="${W-pad}" y="${ty-4}" text-anchor="end" font-size="9" fill="#a89f86">${t("targetLabel").split(" ")[0]} ${target}%</text>
+    <polyline points="${pts}" fill="none" stroke="#e8c84e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    ${dots}
+    <text x="${pad}" y="${H-6}" font-size="9" fill="#a89f86">${s[0].date.slice(5)}</text>
+    <text x="${W-pad}" y="${H-6}" text-anchor="end" font-size="9" fill="#a89f86">${s[s.length-1].date.slice(5)}</text>
+  </svg>`;
+}
+function renderProgress(){
+  renderChart();
+  const pr=projection();
+  const wEl=document.getElementById("pgWeekly"), pEl=document.getElementById("pgProj"), nEl=document.getElementById("pgNeed");
+  const hint=document.getElementById("projHint");
+  if(!pr){ wEl.textContent=pEl.textContent=nEl.textContent="—"; hint.textContent=t("needData"); return; }
+  if(sorted().length<2){ wEl.textContent="—"; pEl.textContent=round1(pr.proj)+"%"; nEl.textContent=round1(pr.need)+"%"; hint.textContent=t("needTwo"); return; }
+  wEl.textContent=(pr.weekly>=0?"+":"")+round1(pr.weekly)+"%";
+  pEl.textContent=round1(pr.proj)+"%";
+  nEl.textContent="+"+round1(pr.need)+"%";
+  hint.textContent=t("projLine")(round1(pr.proj), round1(pr.need), pr.ok);
+}
+
+/* ============ Render: diagnose ============ */
+function classOf(a){ return a>=0.8?"locked":(a>=0.5?"shaky":"needs"); }
+function colorOf(a){ return a>=0.8?"var(--gold)":(a>=0.5?"var(--amber)":"var(--red)"); }
+function renderDiag(){
+  const box=document.getElementById("sectionBox");
+  const secs=sectionAcc();
+  if(!secs){ box.innerHTML=`<div class="empty">${t("detailOnly")}</div>`;
+    document.getElementById("wallHint").textContent="";
+    document.getElementById("heatBox").innerHTML=`<div class="empty" style="grid-column:1/-1">${t("needData")}</div>`;
+    document.getElementById("focusHint").textContent="";
+    renderCoach(); return;
+  }
+  box.innerHTML="";
+  secs.forEach(sec=>{
+    const pct=Math.round(sec.acc*100); const cls=classOf(sec.acc);
+    const name = lang==="zh"?sec.zh:sec.en;
+    const row=document.createElement("div"); row.className="sec-row";
+    row.innerHTML=`<div class="sec-head"><span>${name} <span style="color:var(--muted);font-size:12px">Q${sec.a}–${sec.b}</span>
+      <span class="tag ${cls}" style="background:rgba(255,255,255,.06)">${t(cls)}</span></span>
+      <span class="pct ${cls}">${pct}%</span></div>
+      <div class="sbar"><div class="${cls}b" style="width:${pct}%"></div></div>`;
+    box.appendChild(row);
+  });
+  const wall=theWall();
+  document.getElementById("wallHint").textContent = wall? t("wall")(wall) : t("wallNone");
+
+  // heatmap
+  const {acc}=qAccuracy(); const heat=document.getElementById("heatBox"); heat.innerHTML="";
+  for(let q=1;q<=TOTAL_Q;q++){
+    const a=acc[q]; const cell=document.createElement("div"); cell.className="hcell";
+    cell.style.background = a===null?"var(--card2)":colorOf(a);
+    cell.style.color = (a===null||a<0.5)?"var(--text)":"#1a1500";
+    cell.textContent=q; cell.title=q+": "+(a===null?"—":Math.round(a*100)+"%");
+    heat.appendChild(cell);
+  }
+  const fq=focusQs();
+  document.getElementById("focusHint").textContent = (fq&&fq.length)? t("focus")(fq) : t("focusNone");
+  renderCoach();
+}
+function renderCoach(){
+  const cb=document.getElementById("coachBox");
+  const s=sorted();
+  if(!s.length){ cb.innerHTML=`<span class="lvl">—</span><br>${t("needData")}`; document.getElementById("paceHint").textContent=""; return; }
+  const latest=s[s.length-1].score;
+  const c=t("coach").find(x=>latest<x.max);
+  cb.innerHTML=`<span class="lvl">${c.lvl}</span> · ${latest}%<br>${c.txt}`;
+  document.getElementById("paceHint").textContent = t("pace")(avgBlanks());
+}
+
+function renderAllViews(){ renderGreet(); renderStatus(); renderRecent(); renderProgress(); renderDiag(); document.getElementById("targetIn").value=target; }
+
+/* ============ Build grid ============ */
+function buildGrid(){
+  const map={easy:[1,10],mid:[11,20],hard:[21,25],vhard:[26,30]};
+  Object.entries(map).forEach(([k,[a,b]])=>{
+    const g=document.getElementById("grid-"+k); g.innerHTML="";
+    for(let q=a;q<=b;q++){ const btn=document.createElement("button"); btn.className="qbtn"; btn.textContent=q; btn.dataset.q=q;
+      btn.onclick=()=>{ if(correctSet.has(q)){correctSet.delete(q); btn.classList.remove("on");} else {correctSet.add(q); btn.classList.add("on");} updateLive(); };
+      g.appendChild(btn);
+    }
+  });
+}
+function updateLive(){
+  let c = curMode==="detailed" ? correctSet.size : (parseInt(document.getElementById("numCorrectIn").value)||0);
+  c=Math.max(0,Math.min(TOTAL_Q,c));
+  document.getElementById("liveScore").textContent = pctOf(c)+"%";
+}
+
+/* ============ i18n ============ */
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.getElementById("langBtn").textContent = lang==="zh"?"EN":"中";
+  document.querySelectorAll("[data-i18n]").forEach(el=>{ const k=el.getAttribute("data-i18n"); const v=I18N[lang][k]; if(typeof v==="string") el.textContent=v; });
+  renderAllViews();
+}
+
+/* ============ Events ============ */
+function setMode(m){
+  curMode=m;
+  document.getElementById("segDetailed").className = m==="detailed"?"on":"";
+  document.getElementById("segQuick").className = m==="quick"?"on":"";
+  document.getElementById("detailedBlock").style.display = m==="detailed"?"block":"none";
+  document.getElementById("quickBlock").style.display = m==="quick"?"block":"none";
+  updateLive();
+}
+document.getElementById("segDetailed").onclick=()=>setMode("detailed");
+document.getElementById("segQuick").onclick=()=>setMode("quick");
+document.getElementById("numCorrectIn").oninput=updateLive;
+
+document.getElementById("addBtn").onclick=()=>{
+  const date=document.getElementById("dateIn").value || todayStr();
+  let answered=parseInt(document.getElementById("answeredIn").value);
+  if(isNaN(answered)) answered = curMode==="detailed"? (correctSet.size||0) : (parseInt(document.getElementById("numCorrectIn").value)||0);
+  answered=Math.max(0,Math.min(TOTAL_Q,answered));
+  let rec;
+  if(curMode==="detailed"){
+    const correct=[...correctSet].sort((a,b)=>a-b);
+    if(answered<correct.length) answered=correct.length;
+    rec={date, mode:"detailed", answered, correct, score:pctOf(correct.length)};
+  } else {
+    let nc=parseInt(document.getElementById("numCorrectIn").value)||0; nc=Math.max(0,Math.min(TOTAL_Q,nc));
+    if(answered<nc) answered=nc;
+    rec={date, mode:"quick", answered, num_correct:nc, score:pctOf(nc)};
+  }
+  sessions.push(rec); save();
+  correctSet.clear(); buildGrid();
+  document.getElementById("answeredIn").value=""; document.getElementById("numCorrectIn").value="";
+  updateLive(); renderAllViews(); checkMilestone();
+};
+
+document.body.addEventListener("click",e=>{
+  if(e.target.classList.contains("del")){
+    const i=parseInt(e.target.getAttribute("data-i"));
+    if(confirm(lang==="zh"?"确定删除这条记录吗？":"Delete this record?")){ sessions.splice(i,1); save(); renderAllViews(); checkMilestone(); }
+  }
+});
+
+document.getElementById("targetIn").oninput=e=>{ let v=parseFloat(e.target.value); if(isNaN(v))return; v=Math.max(0,Math.min(100,v)); target=v; localStorage.setItem("amc_target",String(v)); renderProgress(); renderStatus(); };
+
+document.getElementById("langBtn").onclick=()=>{ lang=lang==="zh"?"en":"zh"; localStorage.setItem("amc_lang",lang); applyLang(); };
+
+document.querySelectorAll("nav button").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    const tab=btn.getAttribute("data-tab");
+    document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+    document.getElementById("view-"+tab).classList.add("active");
+    renderAllViews();
+  };
+});
+
+document.getElementById("exportBtn").onclick=()=>{
+  const blob=new Blob([JSON.stringify(sessions,null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download="amc_scores_"+todayStr()+".json"; a.click();
+};
+document.getElementById("importBtn").onclick=()=>document.getElementById("fileIn").click();
+document.getElementById("fileIn").onchange=e=>{
+  const f=e.target.files[0]; if(!f) return; const r=new FileReader();
+  r.onload=()=>{ try{
+    let data=JSON.parse(r.result); if(data.sessions) data=data.sessions; if(!Array.isArray(data)) throw 0;
+    sessions=data.map(x=>{
+      const hasCorrectArr=Array.isArray(x.correct);
+      const mode = x.mode || (hasCorrectArr?"detailed":"quick");
+      const score = (typeof x.score==="number") ? round1(x.score)
+        : pctOf(hasCorrectArr? x.correct.length : (x.num_correct||0));
+      return hasCorrectArr
+        ? {date:x.date, mode:"detailed", answered:x.answered||0, correct:x.correct.map(Number), score}
+        : {date:x.date, mode:"quick", answered:x.answered||0, num_correct:x.num_correct||0, score};
+    });
+    save(); renderAllViews(); checkMilestone(); alert("✓ "+sessions.length);
+  }catch(err){ alert("❌ JSON"); } };
+  r.readAsText(f);
+};
+
+/* ============ Init ============ */
+document.getElementById("dateIn").value=todayStr();
+buildGrid(); setMode("detailed"); applyLang();
+if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
+</script>
+</body>
+</html>

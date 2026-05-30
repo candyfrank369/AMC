@@ -2,6 +2,26 @@
 
 A Python coach that helps you prepare for the **AMC math competition** (held 4th–6th of August). Instead of just logging a score, you log **which questions you got right** — and the program finds your **wall**, the exact point where your paper starts leaking points, then tells you precisely what to drill next for the biggest gain.
 
+## 🌐 Web App (use it on your phone or computer)
+
+The CLI coach is now also a web app — open it anywhere, no install needed:
+
+### 👉 https://candyfrank369.github.io/AMC/
+
+- **黑金** (black & gold) theme, bilingual (中文 / English) one-tap toggle
+- Personalized greeting for **Frank** + a daily coaching line
+- **Countdown to the AMC**, **practice streak 🔥**, and **milestone celebrations** at 40 / 60 / 80 / 100%
+- Log practices in **Detailed** mode (tap the question numbers you got right) or **Quick** mode (count only)
+- Same analysis as the Python tool: section accuracy, the **wall**, focus questions, line-of-best-fit projection, ON TRACK / BEHIND, and coaching advice
+- Score-trend chart + per-question accuracy heatmap
+- Data stays in your browser; export / import JSON (compatible with `amc_scores.json`)
+
+**Add to your home screen** to use it like a native app:
+- iPhone (Safari): Share → *Add to Home Screen*
+- Android (Chrome): ⋮ → *Install app*
+
+The web app lives in `index.html` (+ `manifest.json`, `sw.js`, `icon.svg`). The original Python CLI below is unchanged.
+
 ## ⭐ The headline feature: Section Breakdown + Pacing Coach
 
 The AMC's 30 questions split into difficulty **sections** — Easy (Q1–10), Mid (Q11–20), Hard (Q21–25), Very Hard (Q26–30). Your fastest score gains don't come from the hard problems you can't do; they come from the **section you're closest to locking in.**
