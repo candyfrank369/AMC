@@ -16,6 +16,15 @@ The CLI coach is now also a web app — open it anywhere, no install needed:
 - Score-trend chart + per-question accuracy heatmap
 - Data stays in your browser; export / import JSON (compatible with `amc_scores.json`)
 
+### 🎮 Gamification (Rewards tab)
+
+Studying earns rewards — every practice you log pays out **coins** and **XP** (more for higher scores, streaks, and new personal bests):
+
+- **Levels** — fill the XP bar to level up and unlock rewards (coins, avatars, frames, decorations) at each new level
+- **Shop** — spend coins on **avatars**, **profile frames**, **background decorations**, and **mouse-follower trails**; some items are gated behind a level requirement
+- **Badges** — achievements for streaks, score milestones, practice counts, levels, rebirths and more
+- **Rebirth** — once you reach the required level you can rebirth: it resets this run's level & XP but grants a **permanent +50% coin/XP multiplier** (coins, items and badges are kept). Each rebirth needs a higher level than the last — harder to reach, worth more
+
 **Add to your home screen** to use it like a native app:
 - iPhone (Safari): Share → *Add to Home Screen*
 - Android (Chrome): ⋮ → *Install app*

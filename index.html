@@ -124,18 +124,103 @@
   .confetti{position:fixed; top:-10px; font-size:20px; pointer-events:none; z-index:49; animation:fall linear forwards;}
   @keyframes fall{to{transform:translateY(105vh) rotate(540deg); opacity:0;}}
   .chart-wrap{margin-top:6px;}
+
+  /* ===== Gamification ===== */
+  .statsbar{display:flex; gap:8px; padding:4px 4px 6px;}
+  .chip{flex:1; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:8px 10px; display:flex; align-items:center; gap:7px; font-weight:700; font-size:14px;}
+  .chip .ci{font-size:16px;}
+  .chip.coins{color:var(--gold);}
+  .chip.lv{flex-direction:column; align-items:stretch; gap:4px;}
+  .chip.lv .lvtop{display:flex; justify-content:space-between; align-items:center; font-size:12px;}
+  .xpmini{height:6px; background:var(--card2); border-radius:5px; overflow:hidden;}
+  .xpmini > div{height:100%; background:linear-gradient(90deg,var(--gold-deep),var(--gold-soft)); border-radius:5px; transition:width .5s; width:0;}
+
+  .avatar{display:inline-flex; align-items:center; justify-content:center; width:46px; height:46px; border-radius:50%; background:var(--card2); font-size:24px; flex:0 0 auto;}
+  .greet-row{display:flex; align-items:center; gap:12px;}
+  .greet-row .gtext{min-width:0;}
+  /* frames */
+  .fr-bronze{border:2px solid #cd7f32; box-shadow:0 0 8px rgba(205,127,50,.4);}
+  .fr-silver{border:2px solid #cfd2d6; box-shadow:0 0 8px rgba(207,210,214,.4);}
+  .fr-gold{border:2px solid var(--gold); box-shadow:0 0 12px rgba(232,200,78,.6);}
+  .fr-neon{border:2px solid transparent; background:linear-gradient(var(--card2),var(--card2)) padding-box,linear-gradient(135deg,#d946ef,#3b82f6,#22d3ee) border-box; box-shadow:0 0 14px rgba(168,85,247,.5);}
+
+  /* XP / level card */
+  .lvbig{display:flex; align-items:center; gap:14px; margin-bottom:6px;}
+  .lvbig .num{font-size:34px; font-weight:800; color:var(--gold); line-height:1;}
+  .lvbig .meta{font-size:12px; color:var(--muted);}
+  .multi{display:inline-block; background:rgba(232,200,78,.14); color:var(--gold); border-radius:20px; padding:2px 10px; font-size:12px; font-weight:700;}
+
+  /* Shop */
+  .shop-tabs{display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap;}
+  .shop-tabs button{flex:1; min-width:64px; padding:8px 6px; border-radius:10px; border:1px solid var(--line); background:var(--card2); color:var(--muted); font-size:12px; font-weight:700; cursor:pointer;}
+  .shop-tabs button.on{background:linear-gradient(90deg,var(--gold),var(--gold-deep)); color:#1a1500; border-color:var(--gold);}
+  .shop-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px;}
+  .item{background:var(--card2); border:1px solid var(--line); border-radius:14px; padding:12px; text-align:center; position:relative;}
+  .item .ic{font-size:30px; line-height:1;}
+  .item .nm{font-size:13px; font-weight:700; margin:6px 0 4px;}
+  .item .pr{font-size:12px; color:var(--gold); font-weight:700; margin-bottom:8px;}
+  .item button{width:100%; padding:8px; border:none; border-radius:9px; font-weight:700; font-size:13px; cursor:pointer;}
+  .item .buy{background:linear-gradient(90deg,var(--gold),var(--gold-deep)); color:#1a1500;}
+  .item .equip{background:var(--card); color:var(--text); border:1px solid var(--line);}
+  .item .equipped{background:rgba(81,207,102,.18); color:var(--green); border:1px solid rgba(81,207,102,.4);}
+  .item .locked{background:var(--card); color:var(--muted); border:1px solid var(--line); cursor:not-allowed;}
+  .item.dim{opacity:.55;}
+  .lockbadge{position:absolute; top:8px; right:8px; font-size:10px; background:rgba(0,0,0,.5); color:var(--muted); padding:2px 6px; border-radius:8px;}
+
+  /* Badges */
+  .badge-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px;}
+  .bdg{text-align:center; background:var(--card2); border:1px solid var(--line); border-radius:12px; padding:10px 6px;}
+  .bdg .ic{font-size:26px; filter:grayscale(1) opacity(.4);}
+  .bdg.got .ic{filter:none;}
+  .bdg .nm{font-size:10px; margin-top:4px; color:var(--muted); line-height:1.3;}
+  .bdg.got .nm{color:var(--text);}
+
+  /* Rebirth */
+  .rb-row{display:flex; align-items:center; justify-content:space-between; margin:6px 0 12px;}
+  .rb-row .n{font-size:30px; font-weight:800; color:var(--gold);}
+  .rebirth-btn{width:100%; padding:14px; border:none; border-radius:14px; font-size:15px; font-weight:800; cursor:pointer; background:linear-gradient(90deg,#d946ef,#a855f7); color:#fff; box-shadow:0 6px 20px rgba(168,85,247,.35);}
+  .rebirth-btn:disabled{background:var(--card2); color:var(--muted); box-shadow:none; cursor:not-allowed;}
+
+  .toast{position:fixed; left:50%; bottom:96px; transform:translateX(-50%); background:var(--card); border:1px solid var(--gold); color:var(--text); padding:11px 18px; border-radius:14px; font-size:14px; font-weight:600; z-index:60; box-shadow:0 8px 30px rgba(0,0,0,.5); animation:toastIn .3s; max-width:90vw; text-align:center;}
+  @keyframes toastIn{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+
+  /* Mouse follower trail */
+  .trail{position:fixed; pointer-events:none; z-index:48; font-size:18px; animation:trailFade .8s ease-out forwards;}
+  @keyframes trailFade{0%{opacity:.9; transform:translate(-50%,-50%) scale(1)}100%{opacity:0; transform:translate(-50%,-130%) scale(.4)}}
+
+  /* Decorations (body overlay) */
+  .wrap{position:relative; z-index:1;}
+  #deco{position:fixed; inset:0; z-index:0; pointer-events:none;}
+  body.deco-stars #deco{background-image:radial-gradient(1.5px 1.5px at 20% 30%,rgba(255,255,255,.6),transparent),radial-gradient(1.5px 1.5px at 70% 60%,rgba(255,255,255,.5),transparent),radial-gradient(2px 2px at 40% 80%,rgba(232,200,78,.6),transparent),radial-gradient(1.5px 1.5px at 85% 20%,rgba(255,255,255,.5),transparent),radial-gradient(2px 2px at 10% 70%,rgba(232,200,78,.5),transparent); background-size:cover;}
+  body.deco-sparkle #deco{background-image:radial-gradient(2px 2px at 15% 25%,rgba(232,200,78,.8),transparent),radial-gradient(2.5px 2.5px at 55% 45%,rgba(243,217,122,.7),transparent),radial-gradient(2px 2px at 80% 35%,rgba(232,200,78,.7),transparent),radial-gradient(2.5px 2.5px at 30% 75%,rgba(243,217,122,.8),transparent),radial-gradient(2px 2px at 90% 80%,rgba(232,200,78,.6),transparent),radial-gradient(2px 2px at 65% 90%,rgba(243,217,122,.6),transparent); animation:twinkle 3s ease-in-out infinite;}
+  @keyframes twinkle{0%,100%{opacity:.5}50%{opacity:1}}
+  body.deco-grid #deco{background-image:linear-gradient(rgba(232,200,78,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(232,200,78,.06) 1px,transparent 1px); background-size:32px 32px;}
 </style>
 </head>
 <body>
+<div id="deco"></div>
 <div class="wrap">
   <header>
     <div class="logo"><span class="dot"></span><span>AMC Progress Tracker</span></div>
     <button class="lang-btn" id="langBtn">EN</button>
   </header>
 
+  <div class="statsbar">
+    <div class="chip coins"><span class="ci">🪙</span><span id="coinChip">0</span></div>
+    <div class="chip lv">
+      <div class="lvtop"><span><b id="lvChip">Lv 1</b></span><span id="xpChip" style="color:var(--muted)">0/0</span></div>
+      <div class="xpmini"><div id="xpChipBar"></div></div>
+    </div>
+  </div>
+
   <div class="greet">
-    <div class="hi" id="greetHi">你好，Frank</div>
-    <div class="quote" id="greetQuote"></div>
+    <div class="greet-row">
+      <div class="avatar" id="avatar">🧮</div>
+      <div class="gtext">
+        <div class="hi" id="greetHi">你好，Frank</div>
+        <div class="quote" id="greetQuote"></div>
+      </div>
+    </div>
   </div>
 
   <div class="countdown">
@@ -252,12 +337,55 @@
       <p class="hint" data-i18n="dataHint">数据保存在本机浏览器中。导入格式兼容原 Python 工具的 amc_scores.json。</p>
     </div>
   </div>
+
+  <!-- ===== REWARDS ===== -->
+  <div class="view" id="view-rewards">
+    <div class="card">
+      <h2 data-i18n="lvCardTitle">等级 & 经验</h2>
+      <div class="lvbig">
+        <div class="avatar" id="avatar2">🧮</div>
+        <div>
+          <div class="num" id="lvNum">Lv 1</div>
+          <div class="meta" id="lvMeta"></div>
+        </div>
+        <div style="margin-left:auto" class="multi" id="multiTag">×1.0</div>
+      </div>
+      <div class="bar"><div id="xpBigBar"></div></div>
+      <div class="goal-stats">
+        <div class="stat"><div class="v" id="rwCoins" style="color:var(--gold)">0</div><div class="l" data-i18n="rwCoins">金币</div></div>
+        <div class="stat"><div class="v" id="rwXp">0</div><div class="l" data-i18n="rwXp">累计经验</div></div>
+        <div class="stat"><div class="v" id="rwRb">0</div><div class="l" data-i18n="rwRb">转生</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="rbTitle">转生</h2>
+      <div class="rb-row">
+        <div><div class="n" id="rbMulti">×1.0</div><div class="meta" style="font-size:12px;color:var(--muted)" data-i18n="rbMultiLabel">当前倍率</div></div>
+        <div style="text-align:right"><div class="n" id="rbNext" style="font-size:20px">Lv 5</div><div class="meta" style="font-size:12px;color:var(--muted)" data-i18n="rbNextLabel">下次转生需要</div></div>
+      </div>
+      <button class="rebirth-btn" id="rebirthBtn" data-i18n="rbBtn">转生</button>
+      <p class="hint" id="rbHint"></p>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="shopTitle">商店</h2>
+      <div class="shop-tabs" id="shopTabs"></div>
+      <div class="shop-grid" id="shopGrid"></div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="badgeTitle">徽章成就</h2>
+      <div class="badge-grid" id="badgeGrid"></div>
+    </div>
+  </div>
 </div>
 
 <nav>
   <button data-tab="log" class="active"><span class="ic">📝</span><span data-i18n="navLog">记录</span></button>
   <button data-tab="progress"><span class="ic">📈</span><span data-i18n="navProgress">趋势</span></button>
   <button data-tab="diag"><span class="ic">🎯</span><span data-i18n="navDiag">诊断</span></button>
+  <button data-tab="rewards"><span class="ic">🎁</span><span data-i18n="navRewards">奖励</span></button>
 </nav>
 
 <div id="celebrate"><div class="cele-card">
@@ -312,6 +440,21 @@ const I18N = {
     ],
     celeTtl:p=>`突破 ${p}%！`,
     celeSub:{40:"基础正在成形，稳住别松劲 👏",60:"进入高阶区，势头很好 🚀",80:"奥赛级在望，再冲一把 💪",100:"🏆 满分！你做到了！"},
+    navRewards:"奖励",
+    lvCardTitle:"等级 & 经验", rwCoins:"金币", rwXp:"累计经验", rwRb:"转生",
+    rbTitle:"转生", rbMultiLabel:"当前倍率", rbNextLabel:"下次转生需要", rbBtn:"转生",
+    shopTitle:"商店", badgeTitle:"徽章成就",
+    tabProfile:"头像", tabFrame:"边框", tabDeco:"装饰", tabFollower:"鼠标跟随",
+    buyTxt:"购买", equipTxt:"装备", equippedTxt:"已装备 ✓", none:"无",
+    lvlock:l=>"需 Lv "+l, lvMeta:(c,n)=>`距升级还需 ${n-c} XP`,
+    rbReady:"已满足条件！转生会清空本轮等级和经验，换取永久 +50% 金币/经验倍率，并保留金币、商品与徽章。",
+    rbNotReady:l=>`再升到 Lv ${l} 即可转生 —— 越往后越难，倍率越高。`,
+    rbConfirm:"确定转生吗？本轮等级与经验会清零，换取永久倍率。",
+    coinGain:(c,x)=>`+${c} 🪙　+${x} XP`,
+    levelUp:l=>`🎉 升到 Lv ${l}！`,
+    rewardCoins:c=>`奖励 +${c} 🪙`, rewardUnlock:n=>`解锁「${n}」`,
+    badgeGot:n=>`🏅 获得徽章：${n}`, rebornToast:m=>`♻️ 转生成功！倍率 ×${m}`,
+    noCoins:"金币不足 🙈", boughtTxt:n=>`已购买「${n}」`,
     quotes:[
       "你最快的提分，来自最接近拿下的那个区间。",
       "每做一套，就离比赛更稳一分。",
@@ -354,6 +497,21 @@ const I18N = {
     ],
     celeTtl:p=>`${p}% breakthrough!`,
     celeSub:{40:"Your foundation is forming — keep going 👏",60:"Into advanced territory — great momentum 🚀",80:"Olympiad level in sight — push 💪",100:"🏆 Perfect score! You did it!"},
+    navRewards:"Rewards",
+    lvCardTitle:"Level & XP", rwCoins:"Coins", rwXp:"Lifetime XP", rwRb:"Rebirths",
+    rbTitle:"Rebirth", rbMultiLabel:"Multiplier", rbNextLabel:"Next rebirth at", rbBtn:"Rebirth",
+    shopTitle:"Shop", badgeTitle:"Badges",
+    tabProfile:"Avatars", tabFrame:"Frames", tabDeco:"Decor", tabFollower:"Trails",
+    buyTxt:"Buy", equipTxt:"Equip", equippedTxt:"Equipped ✓", none:"None",
+    lvlock:l=>"Lv "+l+" req", lvMeta:(c,n)=>`${n-c} XP to next level`,
+    rbReady:"Eligible! Rebirth resets this run's level & XP for a permanent +50% coin/XP multiplier; coins, items and badges are kept.",
+    rbNotReady:l=>`Reach Lv ${l} to rebirth — each one is harder and worth more.`,
+    rbConfirm:"Rebirth now? This run's level & XP reset in exchange for a permanent multiplier.",
+    coinGain:(c,x)=>`+${c} 🪙　+${x} XP`,
+    levelUp:l=>`🎉 Reached Lv ${l}!`,
+    rewardCoins:c=>`Reward +${c} 🪙`, rewardUnlock:n=>`Unlocked "${n}"`,
+    badgeGot:n=>`🏅 Badge: ${n}`, rebornToast:m=>`♻️ Reborn! Multiplier ×${m}`,
+    noCoins:"Not enough coins 🙈", boughtTxt:n=>`Bought "${n}"`,
     quotes:[
       "Your fastest gains come from the section you're closest to locking in.",
       "Every practice set makes competition day steadier.",
@@ -599,7 +757,7 @@ function renderCoach(){
   document.getElementById("paceHint").textContent = t("pace")(avgBlanks());
 }
 
-function renderAllViews(){ renderGreet(); renderStatus(); renderRecent(); renderProgress(); renderDiag(); document.getElementById("targetIn").value=target; }
+function renderAllViews(){ renderGreet(); renderStatus(); renderRecent(); renderProgress(); renderDiag(); renderGame(); applyCosmetics(); document.getElementById("targetIn").value=target; }
 
 /* ============ Build grid ============ */
 function buildGrid(){
@@ -654,7 +812,9 @@ document.getElementById("addBtn").onclick=()=>{
     if(answered<nc) answered=nc;
     rec={date, mode:"quick", answered, num_correct:nc, score:pctOf(nc)};
   }
+  const prevBest = sessions.length? Math.max(...sessions.map(s=>s.score)) : -1;
   sessions.push(rec); save();
+  awardForSession(rec, rec.score>prevBest);
   correctSet.clear(); buildGrid();
   document.getElementById("answeredIn").value=""; document.getElementById("numCorrectIn").value="";
   updateLive(); renderAllViews(); checkMilestone();
@@ -706,9 +866,254 @@ document.getElementById("fileIn").onchange=e=>{
   r.readAsText(f);
 };
 
+/* ====================================================================
+   GAMIFICATION: coins, XP, levels, shop, badges, rebirth, followers
+   ==================================================================== */
+const SHOP = [
+  // Avatars / profiles
+  {id:"p_fox",     cat:"profile",  zh:"小狐狸",   en:"Fox",        icon:"🦊", price:150},
+  {id:"p_panda",   cat:"profile",  zh:"熊猫",     en:"Panda",      icon:"🐼", price:150},
+  {id:"p_rocket",  cat:"profile",  zh:"火箭",     en:"Rocket",     icon:"🚀", price:300},
+  {id:"p_owl",     cat:"profile",  zh:"猫头鹰",   en:"Owl",        icon:"🦉", price:350, lvl:8},
+  {id:"p_brain",   cat:"profile",  zh:"大脑",     en:"Brain",      icon:"🧠", price:600},
+  {id:"p_dragon",  cat:"profile",  zh:"龙",       en:"Dragon",     icon:"🐉", price:1200, lvl:12},
+  {id:"p_crown",   cat:"profile",  zh:"王冠",     en:"Crown",      icon:"👑", price:2500, lvl:15},
+  // Frames
+  {id:"f_bronze",  cat:"frame",    zh:"青铜框",   en:"Bronze",     icon:"🟫", price:200, frame:"bronze"},
+  {id:"f_silver",  cat:"frame",    zh:"白银框",   en:"Silver",     icon:"⬜", price:500, frame:"silver"},
+  {id:"f_gold",    cat:"frame",    zh:"黄金框",   en:"Gold",       icon:"🟨", price:1000, frame:"gold", lvl:10},
+  {id:"f_neon",    cat:"frame",    zh:"霓虹框",   en:"Neon",       icon:"🟪", price:1800, frame:"neon", lvl:12},
+  // Decorations (background)
+  {id:"d_stars",   cat:"deco",     zh:"星空",     en:"Starfield",  icon:"✨", price:250, deco:"stars"},
+  {id:"d_sparkle", cat:"deco",     zh:"金粉",     en:"Gold dust",  icon:"🌟", price:450, deco:"sparkle"},
+  {id:"d_grid",    cat:"deco",     zh:"数学网格", en:"Math grid",  icon:"📐", price:650, deco:"grid"},
+  // Mouse followers
+  {id:"m_star",    cat:"follower", zh:"星星跟随", en:"Star trail", icon:"⭐", price:300, follow:"⭐"},
+  {id:"m_coin",    cat:"follower", zh:"金币跟随", en:"Coin trail", icon:"🪙", price:500, follow:"🪙"},
+  {id:"m_fire",    cat:"follower", zh:"火焰跟随", en:"Fire trail", icon:"🔥", price:750, follow:"🔥", lvl:8},
+  {id:"m_spark",   cat:"follower", zh:"闪光跟随", en:"Sparkles",   icon:"💫", price:950, follow:"✨"},
+];
+const BADGES = [
+  {id:"first",    icon:"🎯", zh:"初次出击", en:"First Strike",  dz:"完成第一次练习",        de:"Log your first practice"},
+  {id:"streak3",  icon:"🔥", zh:"三连击",   en:"3-Day Streak",  dz:"连续练习 3 天",         de:"3-day practice streak"},
+  {id:"streak7",  icon:"⚡", zh:"一周连击", en:"Week Warrior",  dz:"连续练习 7 天",         de:"7-day streak"},
+  {id:"s50",      icon:"📈", zh:"半程突破", en:"Halfway",       dz:"单次得分达到 50%",      de:"Score 50% once"},
+  {id:"s80",      icon:"🧠", zh:"高手",     en:"Sharp",         dz:"单次得分达到 80%",      de:"Score 80% once"},
+  {id:"s100",     icon:"🏆", zh:"满分传奇", en:"Perfect",       dz:"单次满分 100%",         de:"Score 100% once"},
+  {id:"sess10",   icon:"📚", zh:"勤奋",     en:"Diligent",      dz:"累计 10 次练习",        de:"10 practices logged"},
+  {id:"sess50",   icon:"🎖️", zh:"老兵",    en:"Veteran",       dz:"累计 50 次练习",        de:"50 practices logged"},
+  {id:"lvl5",     icon:"⭐", zh:"五级学者", en:"Level 5",       dz:"达到 5 级",             de:"Reach level 5"},
+  {id:"lvl10",    icon:"🌟", zh:"十级宗师", en:"Level 10",      dz:"达到 10 级",            de:"Reach level 10"},
+  {id:"rebirth1", icon:"♻️", zh:"涅槃",    en:"Reborn",        dz:"完成第一次转生",        de:"First rebirth"},
+  {id:"shopper",  icon:"🛍️", zh:"剁手党",  en:"Shopper",       dz:"购买第一件商品",        de:"Buy your first item"},
+  {id:"wall15",   icon:"🧱", zh:"破墙者",   en:"Wall Breaker",  dz:"失分墙推进到第 15 题后", de:"Push the wall past Q15"},
+  {id:"rich",     icon:"💰", zh:"小富翁",   en:"Tycoon",        dz:"持有 5000 金币",        de:"Hold 5000 coins"},
+];
+const LEVEL_REWARDS = {
+  2:{coins:120, own:"p_fox"}, 3:{coins:150, own:"f_bronze"}, 4:{coins:180},
+  5:{coins:250, own:"d_stars"}, 6:{coins:280, own:"m_star"}, 7:{coins:320},
+  8:{coins:400, own:"p_owl"}, 9:{coins:450}, 10:{coins:700, own:"f_gold"},
+};
+
+let shopCat = "profile";
+let followerEmoji = null;
+
+function defaultGame(){ return {coins:0, totalXp:0, lifetimeXp:0, level:1, maxLevel:1, rebirths:0, owned:[], equipped:{profile:null,frame:null,deco:null,follower:null}, badges:[], boughtAny:false}; }
+function loadGame(){ try{ return Object.assign(defaultGame(), JSON.parse(localStorage.getItem("amc_game")||"{}")); }catch(e){ return defaultGame(); } }
+function saveGame(){ localStorage.setItem("amc_game", JSON.stringify(game)); }
+let game = loadGame();
+
+function multiplier(){ return 1 + 0.5*game.rebirths; }
+function xpForLevel(L){ let tot=0; for(let i=2;i<=L;i++){ tot += 80 + (i-2)*40; } return tot; }
+function levelFromXp(xp){ let L=1; while(xp>=xpForLevel(L+1)) L++; return L; }
+function rebirthReqLevel(r){ return 5 + 5*r + 2*r*r; }
+function shopItem(id){ return SHOP.find(s=>s.id===id); }
+
+/* ---- toast queue ---- */
+let toastQ=[], toastBusy=false;
+function toast(msg){ toastQ.push(msg); if(!toastBusy) nextToast(); }
+function nextToast(){ if(!toastQ.length){ toastBusy=false; return; } toastBusy=true;
+  const el=document.createElement("div"); el.className="toast"; el.textContent=toastQ.shift();
+  document.body.appendChild(el); setTimeout(()=>{ el.remove(); nextToast(); }, 1600);
+}
+function confettiBurst(){
+  const em=["🎉","✨","🌟","🎊","⭐","💛","🥳"];
+  for(let i=0;i<24;i++){ const c=document.createElement("div"); c.className="confetti";
+    c.textContent=em[i%em.length]; c.style.left=(Math.random()*100)+"vw";
+    c.style.animationDuration=(2+Math.random()*2)+"s"; c.style.animationDelay=(Math.random()*0.3)+"s";
+    document.body.appendChild(c); setTimeout(()=>c.remove(),4500); }
+}
+
+/* ---- earning ---- */
+function awardForSession(rec, isNewBest){
+  const m=multiplier(); const st=streak();
+  let xp = 10 + Math.round(rec.score);
+  let coins = 5 + Math.round(rec.score/2);
+  if(st>1){ coins += st*2; xp += st*3; }
+  if(isNewBest && rec.score>0){ coins += 50; xp += 50; }
+  xp=Math.round(xp*m); coins=Math.round(coins*m);
+  game.coins += coins; game.totalXp += xp; game.lifetimeXp += xp;
+  saveGame();
+  toast(t("coinGain")(coins,xp));
+  checkLevelUp();
+  checkBadges();
+}
+function checkLevelUp(){
+  const newL = levelFromXp(game.totalXp);
+  if(newL>game.level){
+    for(let L=game.level+1; L<=newL; L++){
+      if(L>game.maxLevel){ game.maxLevel=L; const parts=grantLevelReward(L); parts.forEach(p=>toast(p)); }
+    }
+    game.level=newL; saveGame();
+    toast(t("levelUp")(newL)); confettiBurst();
+  }
+}
+function grantLevelReward(L){
+  const r = LEVEL_REWARDS[L] || {coins:50*L};
+  const parts=[];
+  if(r.coins){ game.coins += r.coins; parts.push(t("rewardCoins")(r.coins)); }
+  if(r.own && !game.owned.includes(r.own)){ game.owned.push(r.own); const it=shopItem(r.own); parts.push(t("rewardUnlock")(lang==="zh"?it.zh:it.en)); }
+  saveGame(); return parts;
+}
+
+/* ---- badges ---- */
+function badgeMet(id){
+  const best = sessions.length? Math.max(...sessions.map(s=>s.score)) : 0;
+  const st = streak(); const wall = theWall();
+  switch(id){
+    case "first":   return sessions.length>=1;
+    case "streak3": return st>=3;
+    case "streak7": return st>=7;
+    case "s50":     return best>=50;
+    case "s80":     return best>=80;
+    case "s100":    return best>=100;
+    case "sess10":  return sessions.length>=10;
+    case "sess50":  return sessions.length>=50;
+    case "lvl5":    return game.maxLevel>=5;
+    case "lvl10":   return game.maxLevel>=10;
+    case "rebirth1":return game.rebirths>=1;
+    case "shopper": return game.boughtAny;
+    case "wall15":  return wall!==null && (wall===0 || wall>15);
+    case "rich":    return game.coins>=5000;
+  }
+  return false;
+}
+function checkBadges(){
+  let any=false;
+  BADGES.forEach(b=>{ if(!game.badges.includes(b.id) && badgeMet(b.id)){ game.badges.push(b.id); toast(t("badgeGot")(lang==="zh"?b.zh:b.en)); any=true; } });
+  if(any){ saveGame(); confettiBurst(); }
+}
+
+/* ---- rebirth ---- */
+function doRebirth(){
+  const reqL = rebirthReqLevel(game.rebirths);
+  if(game.level<reqL) return;
+  if(!confirm(t("rbConfirm"))) return;
+  game.rebirths++; game.totalXp=0; game.level=1; saveGame();
+  checkBadges();
+  toast(t("rebornToast")(multiplier().toFixed(1))); confettiBurst();
+  renderAllViews();
+}
+
+/* ---- shop / cosmetics ---- */
+function isOwned(it){ return game.owned.includes(it.id); }
+function isLocked(it){ return it.lvl && game.maxLevel < it.lvl && !isOwned(it); }
+function buyItem(id){
+  const it=shopItem(id); if(!it || isOwned(it) || isLocked(it)) return;
+  if(game.coins < it.price){ toast(t("noCoins")); return; }
+  game.coins -= it.price; game.owned.push(id); game.boughtAny=true;
+  game.equipped[it.cat]=id; saveGame();
+  toast(t("boughtTxt")(lang==="zh"?it.zh:it.en));
+  checkBadges(); renderAllViews();
+}
+function toggleEquip(id){
+  const it=shopItem(id); if(!it || !isOwned(it)) return;
+  if(game.equipped[it.cat]===id && it.cat!=="profile"){ game.equipped[it.cat]=null; }
+  else { game.equipped[it.cat]=id; }
+  saveGame(); renderAllViews();
+}
+function avatarEmoji(){ const id=game.equipped.profile; const it=id?shopItem(id):null; return it?it.icon:"🧮"; }
+function applyCosmetics(){
+  const emo=avatarEmoji();
+  ["avatar","avatar2"].forEach(idn=>{ const el=document.getElementById(idn); if(!el) return;
+    el.textContent=emo; el.className="avatar";
+    const fid=game.equipped.frame; if(fid){ const f=shopItem(fid); if(f) el.classList.add("fr-"+f.frame); }
+  });
+  document.body.className = document.body.className.replace(/\bdeco-\S+/g,"").trim();
+  const did=game.equipped.deco; if(did){ const d=shopItem(did); if(d) document.body.classList.add("deco-"+d.deco); }
+  const mid=game.equipped.follower; const mi=mid?shopItem(mid):null; followerEmoji = mi?mi.follow:null;
+}
+
+/* ---- render game ---- */
+function renderGame(){
+  const m=multiplier(), L=game.level;
+  const base=xpForLevel(L), cur=game.totalXp-base, need=xpForLevel(L+1)-base;
+  // stats bar
+  setTxt("coinChip", game.coins.toLocaleString());
+  setTxt("lvChip", "Lv "+L);
+  setTxt("xpChip", cur+"/"+need);
+  setW("xpChipBar", cur/need*100);
+  // level card
+  setTxt("lvNum", "Lv "+L);
+  setTxt("lvMeta", t("lvMeta")(cur,need));
+  setTxt("multiTag", "×"+m.toFixed(1));
+  setW("xpBigBar", cur/need*100);
+  setTxt("rwCoins", game.coins.toLocaleString());
+  setTxt("rwXp", game.lifetimeXp.toLocaleString());
+  setTxt("rwRb", game.rebirths);
+  // rebirth
+  const reqL=rebirthReqLevel(game.rebirths); const ready=game.level>=reqL;
+  setTxt("rbMulti", "×"+m.toFixed(1));
+  setTxt("rbNext", "Lv "+reqL);
+  const rbBtn=document.getElementById("rebirthBtn"); rbBtn.disabled=!ready; rbBtn.textContent=t("rbBtn");
+  setTxt("rbHint", ready? t("rbReady") : t("rbNotReady")(reqL));
+  renderShop(); renderBadges();
+}
+function setTxt(id,v){ const e=document.getElementById(id); if(e) e.textContent=v; }
+function setW(id,p){ const e=document.getElementById(id); if(e) e.style.width=Math.max(0,Math.min(100,p))+"%"; }
+
+function renderShop(){
+  const tabs=document.getElementById("shopTabs");
+  const cats=[["profile","tabProfile"],["frame","tabFrame"],["deco","tabDeco"],["follower","tabFollower"]];
+  tabs.innerHTML=cats.map(([c,k])=>`<button data-c="${c}" class="${c===shopCat?'on':''}">${t(k)}</button>`).join("");
+  tabs.querySelectorAll("button").forEach(b=>b.onclick=()=>{ shopCat=b.dataset.c; renderShop(); });
+  const grid=document.getElementById("shopGrid"); grid.innerHTML="";
+  SHOP.filter(i=>i.cat===shopCat).forEach(it=>{
+    const owned=isOwned(it), locked=isLocked(it), equipped=game.equipped[it.cat]===it.id;
+    const name=lang==="zh"?it.zh:it.en;
+    let btn;
+    if(equipped) btn=`<button class="equipped" data-eq="${it.id}">${t("equippedTxt")}</button>`;
+    else if(owned) btn=`<button class="equip" data-eq="${it.id}">${t("equipTxt")}</button>`;
+    else if(locked) btn=`<button class="locked" disabled>${t("lvlock")(it.lvl)}</button>`;
+    else btn=`<button class="buy" data-buy="${it.id}">${t("buyTxt")} ${it.price}🪙</button>`;
+    const card=document.createElement("div"); card.className="item"+(locked?" dim":"");
+    card.innerHTML=`${locked?`<span class="lockbadge">🔒 Lv ${it.lvl}</span>`:""}<div class="ic">${it.icon}</div><div class="nm">${name}</div>${owned?"":`<div class="pr">${it.price} 🪙</div>`}${btn}`;
+    grid.appendChild(card);
+  });
+  grid.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>buyItem(b.dataset.buy));
+  grid.querySelectorAll("[data-eq]").forEach(b=>b.onclick=()=>toggleEquip(b.dataset.eq));
+}
+function renderBadges(){
+  const g=document.getElementById("badgeGrid"); g.innerHTML="";
+  BADGES.forEach(b=>{ const got=game.badges.includes(b.id);
+    const d=document.createElement("div"); d.className="bdg"+(got?" got":"");
+    d.title=(lang==="zh"?b.dz:b.de); d.innerHTML=`<div class="ic">${b.icon}</div><div class="nm">${lang==="zh"?b.zh:b.en}</div>`;
+    g.appendChild(d);
+  });
+}
+
+document.getElementById("rebirthBtn").onclick=doRebirth;
+document.addEventListener("mousemove", e=>{
+  if(!followerEmoji) return;
+  const now=Date.now(); if(now-(window.__lastTrail||0)<45) return; window.__lastTrail=now;
+  const el=document.createElement("div"); el.className="trail"; el.textContent=followerEmoji;
+  el.style.left=e.clientX+"px"; el.style.top=e.clientY+"px";
+  document.body.appendChild(el); setTimeout(()=>el.remove(),800);
+});
+
 /* ============ Init ============ */
 document.getElementById("dateIn").value=todayStr();
-buildGrid(); setMode("detailed"); applyLang();
+buildGrid(); setMode("detailed"); applyLang(); applyCosmetics();
 if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
 </script>
 </body>
