@@ -68,6 +68,7 @@ def choose_coach_mode():
     print("\nChoose your coach mode:")
     print("  1) Detailed - enter WHICH questions you got right (unlocks your section breakdown). RECOMMENDED")
     print("  2) Quick    - just enter HOW MANY you got right (faster, but no section breakdown)")
+    print("Tip: Detailed mode is the better coach - it tells you which sections to study.")
     while True:
         choice = input("Mode (1 or 2): ").strip()
         if choice == "1":
