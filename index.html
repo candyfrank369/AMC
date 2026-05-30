@@ -576,6 +576,16 @@ function fmt(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0
 function todayStr(){ return fmt(new Date()); }
 function round1(n){ return Math.round(n*10)/10; }
 function pctOf(c){ return round1(c/TOTAL_Q*100); }
+/* ---- weighted scoring: Q1–10=3, Q11–20=4, Q21–25=5, Q26=6,27=7,28=8,29=9,30=10 (max 135) ---- */
+const PTS = (function(){ const p={}; for(let q=1;q<=10;q++)p[q]=3; for(let q=11;q<=20;q++)p[q]=4; for(let q=21;q<=25;q++)p[q]=5; p[26]=6;p[27]=7;p[28]=8;p[29]=9;p[30]=10; return p; })();
+const MAX_POINTS = 135;
+function qPoints(q){ return PTS[q]||0; }
+function pointsOfCorrect(arr){ return arr.reduce((s,q)=>s+qPoints(q),0); }
+function pointsEasiestN(n){ let s=0; for(let q=1;q<=Math.min(n,TOTAL_Q);q++) s+=qPoints(q); return s; }
+function scoreFromPoints(p){ return round1(p/MAX_POINTS*100); }
+function scoreFromCorrect(arr){ return scoreFromPoints(pointsOfCorrect(arr)); }
+function scoreFromCount(n){ return scoreFromPoints(pointsEasiestN(n)); }
+function recordPoints(s){ return s.mode==="detailed" ? pointsOfCorrect(s.correct||[]) : pointsEasiestN(s.num_correct||0); }
 function daysLeft(){ const d=Math.ceil((new Date(COMP_DATE+"T23:59:59")-new Date())/86400000); return d>0?d:0; }
 function sorted(){ return sessions.slice().sort((a,b)=> a.date<b.date?-1:1); }
 function correctCount(s){ return s.mode==="detailed" ? (s.correct||[]).length : (s.num_correct||0); }
@@ -699,7 +709,7 @@ function recItem(s, idx){
   const cc=correctCount(s);
   const div=document.createElement("div"); div.className="rec";
   const modeTag = s.mode==="detailed"? (lang==="zh"?"详细":"detailed") : (lang==="zh"?"快速":"quick");
-  div.innerHTML=`<div class="info"><span class="biz">${s.score}%　<span style="color:var(--muted);font-weight:400;font-size:13px">${cc}/${TOTAL_Q}</span></span>
+  div.innerHTML=`<div class="info"><span class="biz">${recordPoints(s)}/${MAX_POINTS}　<span style="color:var(--muted);font-weight:400;font-size:13px">${s.score}% · ${cc}/${TOTAL_Q}${lang==="zh"?"题":""}</span></span>
     <span class="note">${s.date} · ${modeTag} · ${lang==="zh"?"答":""}${s.answered||0}${lang==="zh"?"题":" answered"}</span></div>
     <div class="right"><button class="del" data-i="${idx}">✕</button></div>`;
   return div;
@@ -810,9 +820,10 @@ function buildGrid(){
   });
 }
 function updateLive(){
-  let c = curMode==="detailed" ? correctSet.size : (parseInt(document.getElementById("numCorrectIn").value)||0);
-  c=Math.max(0,Math.min(TOTAL_Q,c));
-  document.getElementById("liveScore").textContent = pctOf(c)+"%";
+  let pts;
+  if(curMode==="detailed"){ pts=pointsOfCorrect([...correctSet]); }
+  else { let n=Math.max(0,Math.min(TOTAL_Q,parseInt(document.getElementById("numCorrectIn").value)||0)); pts=pointsEasiestN(n); }
+  document.getElementById("liveScore").textContent = pts+"/"+MAX_POINTS+" · "+scoreFromPoints(pts)+"%";
 }
 
 /* ============ i18n ============ */
@@ -847,11 +858,11 @@ document.getElementById("addBtn").onclick=()=>{
   if(curMode==="detailed"){
     const correct=[...correctSet].sort((a,b)=>a-b);
     if(answered<correct.length) answered=correct.length;
-    rec={date, mode:"detailed", answered, correct, score:pctOf(correct.length)};
+    rec={date, mode:"detailed", answered, correct, score:scoreFromCorrect(correct)};
   } else {
     let nc=parseInt(document.getElementById("numCorrectIn").value)||0; nc=Math.max(0,Math.min(TOTAL_Q,nc));
     if(answered<nc) answered=nc;
-    rec={date, mode:"quick", answered, num_correct:nc, score:pctOf(nc)};
+    rec={date, mode:"quick", answered, num_correct:nc, score:scoreFromCount(nc)};
   }
   const prevBest = sessions.length? Math.max(...sessions.map(s=>s.score)) : -1;
   sessions.push(rec); save();
@@ -897,7 +908,7 @@ document.getElementById("fileIn").onchange=e=>{
       const hasCorrectArr=Array.isArray(x.correct);
       const mode = x.mode || (hasCorrectArr?"detailed":"quick");
       const score = (typeof x.score==="number") ? round1(x.score)
-        : pctOf(hasCorrectArr? x.correct.length : (x.num_correct||0));
+        : (hasCorrectArr? scoreFromCorrect(x.correct.map(Number)) : scoreFromCount(x.num_correct||0));
       return hasCorrectArr
         ? {date:x.date, mode:"detailed", answered:x.answered||0, correct:x.correct.map(Number), score}
         : {date:x.date, mode:"quick", answered:x.answered||0, num_correct:x.num_correct||0, score};
